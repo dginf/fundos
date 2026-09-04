@@ -726,74 +726,54 @@ function renderGeografica(main, df) {
   // Mapas Plotly
   if (MAPA_JSON && window.Plotly) {
 
-    // Configuração geo comum para Plotly.js no browser
-    const geoBase = {
-      showframe: false,
-      showcoastlines: false,
-      showland: false,
-      showocean: false,
-      showlakes: false,
-      showrivers: false,
-      projection: { type: 'mercator' },
-      fitbounds: 'locations',
-      visible: false,
-    };
-
-    const layoutBase = {
-      margin: { r: 0, t: 30, l: 0, b: 0 },
-      paper_bgcolor: 'white',
-      geo: geoBase,
-    };
-
-    function makeChoropleth(ufs, zvals, zmin, zmax, colorbar_title, hoverTpl) {
-      return [{
-        type: 'choropleth',
-        geojson: MAPA_JSON,
-        locations: ufs,
-        z: zvals,
-        colorscale: 'Blues',
-        zmin, zmax,
-        colorbar: { title: colorbar_title, ticksuffix: '%', thickness: 14, len: 0.8 },
-        marker: { line: { color: 'white', width: 0.8 } },
-        hovertemplate: hoverTpl,
-      }];
+    // Mapas usando choroplethmapbox com style white-bg (sem token, sem tiles externos)
+    function makeMapbox(ufs, zvals, zmin, zmax, colorbarTitle, zoom, centerLat, centerLon) {
+      return {
+        data: [{
+          type: 'choroplethmapbox',
+          geojson: MAPA_JSON,
+          locations: ufs,
+          z: zvals,
+          colorscale: 'Blues',
+          zmin, zmax,
+          colorbar: { title: colorbarTitle, ticksuffix: '%', thickness: 14, len: 0.8 },
+          marker: { line: { color: 'white', width: 0.8 }, opacity: 0.85 },
+          hovertemplate: '<b>%{location}</b><br>%{z:.1f}%<extra></extra>',
+        }],
+        layout: {
+          mapbox: { style: 'white-bg', zoom, center: { lat: centerLat, lon: centerLon } },
+          margin: { r: 0, t: 0, l: 0, b: 0 },
+          paper_bgcolor: 'white',
+        },
+        config: { responsive: true, displayModeBar: false },
+      };
     }
 
-    // Mapa principal — aderência PNDR
-    Plotly.newPlot('mapa-pndr',
-      makeChoropleth(
-        ufData.map(u => u.UF),
-        ufData.map(u => +u.pct_pndr.toFixed(1)),
-        0, 100, '% PNDR',
-        '<b>%{location}</b><br>% PNDR: %{z:.1f}%<extra></extra>'
-      ),
-      { ...layoutBase, height: 380 },
-      { responsive: true, displayModeBar: false }
+    // Mapa principal — Brasil inteiro
+    const mpndr = makeMapbox(
+      ufData.map(u => u.UF),
+      ufData.map(u => +u.pct_pndr.toFixed(1)),
+      0, 100, '% PNDR', 2.5, -14, -52
     );
+    Plotly.newPlot('mapa-pndr', mpndr.data, { ...mpndr.layout, height: 380 }, mpndr.config);
 
     // Mapas por fundo
-    const zoomFundo = {
-      FCO: {},
-      FNE: {},
-      FNO: {},
+    const cfgFundo = {
+      FCO: { zoom: 3.5, lat: -15.5, lon: -54.5 },
+      FNE: { zoom: 2.8, lat: -11.0, lon: -40.0 },
+      FNO: { zoom: 3.2, lat:  -5.0, lon: -62.0 },
     };
-
     ['FCO','FNE','FNO'].forEach(f => {
       const fData = fundoUFData.filter(d => d.FUNDO_ORIGEM === f);
       if (!fData.length) return;
-      const geo = { ...geoBase, ...zoomFundo[f] };
-      Plotly.newPlot(`mapa-${f.toLowerCase()}`,
-        makeChoropleth(
-          fData.map(d => d.UF),
-          fData.map(d => +d.pct_uf.toFixed(2)),
-          0, 50, '% Fundo',
-          '<b>%{location}</b><br>%{z:.1f}%<extra></extra>'
-        ),
-        { margin: { r: 0, t: 0, l: 0, b: 0 }, paper_bgcolor: 'white', geo, height: 280 },
-        { responsive: true, displayModeBar: false }
+      const { zoom, lat, lon } = cfgFundo[f];
+      const mf = makeMapbox(
+        fData.map(d => d.UF),
+        fData.map(d => +d.pct_uf.toFixed(2)),
+        0, 50, '% Fundo', zoom, lat, lon
       );
+      Plotly.newPlot(`mapa-${f.toLowerCase()}`, mf.data, { ...mf.layout, height: 280 }, mf.config);
     });
-
   } else {
     ['mapa-pndr','mapa-fco','mapa-fne','mapa-fno'].forEach(id => {
       const el = document.getElementById(id);
