@@ -720,7 +720,7 @@ function renderGeografica(main, df) {
   });
 
   // Mapas Plotly
-  if (MAPA_JSON && window.Plotly) {
+  if (MAPA_JSON && window.L) {
 
     // Mapas com Leaflet — GeoJSON colorido manualmente
     function blueScale(val, min, max) {
@@ -825,7 +825,7 @@ function renderGeografica(main, df) {
 
 
   // Mapas Plotly
-  if (MAPA_JSON && window.Plotly) {
+  if (MAPA_JSON && window.L) {
     // Mapa principal
     const ufs   = ufData.map(u => u.UF);
     const z     = ufData.map(u => +u.pct_pndr.toFixed(1));
