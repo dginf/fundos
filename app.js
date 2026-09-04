@@ -60,7 +60,7 @@ function renderSidebar() {
 
   const sidebar = document.getElementById('sidebar');
   sidebar.innerHTML = `
-    <h3>Filtros</h3>
+    <h3>Filtros de Análise</h3>
     <div class="group">
       <div class="group-label">Ano</div>
       <div class="seg" id="seg-ano">
@@ -287,7 +287,7 @@ function avisoFiltro() {
   if (state.anos.length) partes.push(`Anos: ${state.anos.join(', ')}`);
   if (state.ufs.length)  partes.push(`UFs: ${state.ufs.join(', ')}`);
   if (!partes.length) return '';
-  return `<div class="aviso-filtro">⚠️ Filtro ativo — ${partes.join(' | ')}</div>`;
+  return `<div class="note">⚠️ Filtro ativo — ${partes.join(' | ')}</div>`;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -323,14 +323,14 @@ function renderVisaoGeral(main, df, agr) {
     ${avisoFiltro()}
     ${renderKPIs(df, agr)}
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">Volume Total Contratado por Ano (R$ Bilhões)</div>
-        <div class="chart-desc">Valor absoluto das contratações realizadas por cada fundo no período.</div>
+      <div class="card">
+        <div class="card-title">Volume Total Contratado por Ano (R$ Bilhões)</div>
+        <div class="card-desc">Valor absoluto das contratações realizadas por cada fundo no período.</div>
         <div style="height:300px"><canvas id="c-vol"></canvas></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Ind. 1 — Tíquete Médio (R$ mil / operação)</div>
-        <div class="chart-desc">Razão entre o valor total contratado e a quantidade de operações. Critério: quanto menor, melhor.</div>
+      <div class="card">
+        <div class="card-title">Ind. 1 — Tíquete Médio (R$ mil / operação)</div>
+        <div class="card-desc">Razão entre o valor total contratado e a quantidade de operações. Critério: quanto menor, melhor.</div>
         <div style="height:300px"><canvas id="c-tiquete"></canvas></div>
       </div>
     </div>`;
@@ -368,14 +368,14 @@ function renderAderencia(main, df, agr) {
     ${avisoFiltro()}
     <div class="section-title">Seção 2 — Aderência à PNDR</div>
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">Ind. 2 — Tipologia Prioritária PNDR (%)</div>
-        <div class="chart-desc">Razão entre o valor contratado com tipologias prioritárias da PNDR (municípios de baixa e média rendas, com todos os seus dinamismos) e o valor total contratado no exercício.</div>
+      <div class="card">
+        <div class="card-title">Ind. 2 — Tipologia Prioritária PNDR (%)</div>
+        <div class="card-desc">Razão entre o valor contratado com tipologias prioritárias da PNDR (municípios de baixa e média rendas, com todos os seus dinamismos) e o valor total contratado no exercício.</div>
         <div style="height:320px"><canvas id="c-tip"></canvas></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Ranking por UF — Volume Total (R$ Bi)</div>
-        <div class="chart-desc">Distribuição geográfica do valor total contratado por Unidade da Federação.</div>
+      <div class="card">
+        <div class="card-title">Ranking por UF — Volume Total (R$ Bi)</div>
+        <div class="card-desc">Distribuição geográfica do valor total contratado por Unidade da Federação.</div>
         <div style="height:320px"><canvas id="c-rank-uf"></canvas></div>
       </div>
     </div>`;
@@ -417,21 +417,21 @@ function renderDemocratizacao(main, df, agr) {
     ${avisoFiltro()}
     <div class="section-title">Seção 3 — Democratização do Crédito</div>
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">Ind. 3 — Porte Prioritário — até R$ 4,8 mi (%)</div>
-        <div class="chart-desc">Razão entre o valor contratado com tomadores de menor porte (até R$ 4,8 milhões de faturamento bruto anual) e o valor total contratado pelo Fundo no exercício.</div>
+      <div class="card">
+        <div class="card-title">Ind. 3 — Porte Prioritário — até R$ 4,8 mi (%)</div>
+        <div class="card-desc">Razão entre o valor contratado com tomadores de menor porte (até R$ 4,8 milhões de faturamento bruto anual) e o valor total contratado pelo Fundo no exercício.</div>
         <div style="height:280px"><canvas id="c-porte3"></canvas></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Ind. 4 — Tomadores até R$ 16 mi (%)</div>
-        <div class="chart-desc">Razão entre o valor contratado com tomadores de menor porte (até R$ 16,0 milhões de faturamento bruto anual) e o valor total contratado no exercício.</div>
+      <div class="card">
+        <div class="card-title">Ind. 4 — Tomadores até R$ 16 mi (%)</div>
+        <div class="card-desc">Razão entre o valor contratado com tomadores de menor porte (até R$ 16,0 milhões de faturamento bruto anual) e o valor total contratado no exercício.</div>
         <div style="height:280px"><canvas id="c-porte4"></canvas></div>
       </div>
     </div>
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">Ind. 5 — Pronaf — FNE e FNO (%)</div>
-        <div class="chart-desc">Razão entre o valor total contratado junto ao Pronaf e o valor total contratado no exercício. Aplicável ao FNE e FNO. Meta mínima legal: 10% (Lei n. 9.126/1995).</div>
+      <div class="card">
+        <div class="card-title">Ind. 5 — Pronaf — FNE e FNO (%)</div>
+        <div class="card-desc">Razão entre o valor total contratado junto ao Pronaf e o valor total contratado no exercício. Aplicável ao FNE e FNO. Meta mínima legal: 10% (Lei n. 9.126/1995).</div>
         <div style="height:280px"><canvas id="c-pronaf"></canvas></div>
       </div>
     </div>`;
@@ -508,7 +508,7 @@ function renderTerritorios(main, df, agr) {
   const interAcu = agr.reduce((s,r) => s + r.VALOR_INTERMEDIADORAS, 0) / (totalAll || 1) * 100;
 
   const gauge = (val, label, cor, meta) => `
-    <div class="gauge-card">
+    <div class="card">
       <div style="text-align:center;padding:10px 0">
         <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:8px">${label}</div>
         <div style="font-size:32px;font-weight:700;color:${cor}">${val.toFixed(1)}%</div>
@@ -539,17 +539,17 @@ function renderTerritorios(main, df, agr) {
     ${avisoFiltro()}
     <div class="section-title">Seção 4 — Territórios Específicos</div>
     <div class="three-col">
-      <div class="chart-card">
+      <div class="card">
         ${gauge(semAcu, 'Semiárido (FNE)', '#e65100', 50)}
         <div style="height:200px;margin-top:12px"><canvas id="c-semi"></canvas></div>
         <div class="ind-desc">Ind. 6 — Razão entre o valor contratado na região semiárida e o total contratado pelo FNE. Meta mínima legal: 50% (art. 13, §1º, IX).</div>
       </div>
-      <div class="chart-card">
+      <div class="card">
         ${gauge(frontAcu, 'Faixa de Fronteira', '#2e7d32')}
         <div style="height:200px;margin-top:12px"><canvas id="c-front"></canvas></div>
         <div class="ind-desc">Ind. 7/8 — Razão entre o valor contratado nos municípios da Faixa de Fronteira e o valor total contratado pelo FNO (Ind. 7) e FCO (Ind. 8).</div>
       </div>
-      <div class="chart-card">
+      <div class="card">
         ${gauge(interAcu, 'Cidades Intermediadoras', '#cc0000')}
         <div style="height:200px;margin-top:12px"><canvas id="c-inter"></canvas></div>
         <div class="ind-desc">Ind. 9 — Razão entre o valor contratado nos municípios do Programa Cidades Intermediadoras e o valor total contratado no exercício.</div>
@@ -585,32 +585,32 @@ function renderSetorial(main, df, agr) {
     ${avisoFiltro()}
     <div class="section-title">Seção 5 — Composição Setorial</div>
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">Ind. 10/11 — Setor Rural e não Rural (%)</div>
-        <div class="chart-desc">Razão entre o valor total contratado no setor rural (Ind. 10) e no setor não rural (Ind. 11) e o valor total contratado no exercício. Rural e não rural somam 100%; infraestrutura é um subconjunto do não rural (Ind. 12).</div>
+      <div class="card">
+        <div class="card-title">Ind. 10/11 — Setor Rural e não Rural (%)</div>
+        <div class="card-desc">Razão entre o valor total contratado no setor rural (Ind. 10) e no setor não rural (Ind. 11) e o valor total contratado no exercício. Rural e não rural somam 100%; infraestrutura é um subconjunto do não rural (Ind. 12).</div>
         <div style="height:300px"><canvas id="c-rural"></canvas></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Ind. 12 — Infraestrutura (%)</div>
-        <div class="chart-desc">Razão entre o valor total contratado no setor de infraestrutura e o valor total contratado no exercício.</div>
+      <div class="card">
+        <div class="card-title">Ind. 12 — Infraestrutura (%)</div>
+        <div class="card-desc">Razão entre o valor total contratado no setor de infraestrutura e o valor total contratado no exercício.</div>
         <div style="height:300px"><canvas id="c-infra"></canvas></div>
       </div>
     </div>
     <div class="section-title" style="font-size:17px;margin-top:8px">Ind. 13 — Contratações por Finalidade da Operação</div>
     <div class="section-sub">Razão entre o total contratado em cada finalidade (capital de giro, investimento, custeio e comercialização) e o total contratado pelo Fundo no exercício.</div>
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">13a — Capital de Giro (%)</div>
+      <div class="card">
+        <div class="card-title">13a — Capital de Giro (%)</div>
         <div style="height:260px"><canvas id="c-cg"></canvas></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">13b — Investimento (%)</div>
+      <div class="card">
+        <div class="card-title">13b — Investimento (%)</div>
         <div style="height:260px"><canvas id="c-inv"></canvas></div>
       </div>
     </div>
     <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-title">13c — Custeio e Comercialização (%)</div>
+      <div class="card">
+        <div class="card-title">13c — Custeio e Comercialização (%)</div>
         <div style="height:260px"><canvas id="c-cust"></canvas></div>
       </div>
     </div>`;
@@ -651,12 +651,12 @@ function renderGeografica(main, df) {
     ${avisoFiltro()}
     <div class="section-title">Análise Geográfica</div>
     <div class="two-col" style="align-items:start">
-      <div class="chart-card" id="wrap-mapa" style="min-height:420px">
-        <div class="chart-title">Mapa de Aderência à PNDR por UF</div>
+      <div class="card" id="wrap-mapa" style="min-height:420px">
+        <div class="card-title">Mapa de Aderência à PNDR por UF</div>
         <div id="mapa-pndr" style="height:380px"></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Ranking de Aderência à PNDR por UF</div>
+      <div class="card">
+        <div class="card-title">Ranking de Aderência à PNDR por UF</div>
         <div class="ind-desc">Percentual de contratações em tipologias prioritárias da PNDR por UF.</div>
         <div style="height:380px"><canvas id="c-rank-pndr"></canvas></div>
       </div>
@@ -664,12 +664,12 @@ function renderGeografica(main, df) {
     <div class="section-title" style="font-size:17px;margin-top:8px">Ind. 14 — Contratações por UF (% sobre total do Fundo)</div>
     <div class="section-sub">Razão entre o total contratado na UF e o total contratado pelo Fundo no exercício.</div>
     <div class="three-col" id="mapas-fundos">
-      <div class="chart-card"><div class="chart-title">FCO — % por UF</div><div id="mapa-fco" style="height:300px"></div></div>
-      <div class="chart-card"><div class="chart-title">FNE — % por UF</div><div id="mapa-fne" style="height:300px"></div></div>
-      <div class="chart-card"><div class="chart-title">FNO — % por UF</div><div id="mapa-fno" style="height:300px"></div></div>
+      <div class="card"><div class="card-title">FCO — % por UF</div><div id="mapa-fco" style="height:300px"></div></div>
+      <div class="card"><div class="card-title">FNE — % por UF</div><div id="mapa-fne" style="height:300px"></div></div>
+      <div class="card"><div class="card-title">FNO — % por UF</div><div id="mapa-fno" style="height:300px"></div></div>
     </div>
-    <div class="chart-card">
-      <div class="chart-title">Ind. 14 — Contratações por UF (% sobre total do Fundo)</div>
+    <div class="card">
+      <div class="card-title">Ind. 14 — Contratações por UF (% sobre total do Fundo)</div>
       <div style="height:${ufData.length * 22 + 80}px"><canvas id="c-ind14"></canvas></div>
     </div>`;
 

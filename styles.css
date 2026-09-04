@@ -1,98 +1,109 @@
-/* =========================================================================
-   Fundos Constitucionais — styles.css
-   Padrão visual DGINF/MIDR — baseado no ibrcrm
-   ========================================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 15px; }
-body { font-family: 'Roboto', Arial, sans-serif; background: #E8E8E8; color: #232323; min-height: 100vh; display: flex; flex-direction: column; }
+:root {
+  --primary: #1565c0; --primary-dark: #0d3e8a; --secondary: #009C3B;
+  --bg-page: #E8E8E8; --card: #FFFFFF;
+  --ink: #232323; --ink-soft: #666666; --line: #e0e0e0;
+  --green: #009C3B; --green-bg: #e5f6ec;
+  --amber: #b6790a; --amber-bg: #fdf3e0;
+  --red: #c62828; --red-bg: #fbe9e9;
+  --shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
 
-/* ── Topbar ── */
-.topbar { background: #fff; border-bottom: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-.dash-header { max-width: 1600px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
-.dash-header h1 { font-size: 22px; font-weight: 700; color: #1565c0; margin-bottom: 4px; }
-.dash-header p  { font-size: 13px; color: #666; line-height: 1.5; }
-.badge { display: inline-block; background: #1565c0; border-radius: 4px; padding: 6px 14px; font-size: 12px; font-weight: 500; color: #fff; text-decoration: none; white-space: nowrap; margin-top: 4px; }
-.badge:hover { background: #0d3e8a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg-page); color: var(--ink); font-family: 'Roboto', Arial, sans-serif; font-size: 14px; }
 
-/* ── Topnav ── */
-.topnav { background: #1565c0; display: flex; gap: 2px; padding: 0 24px; overflow-x: auto; }
-.topnav a { color: rgba(255,255,255,.75); padding: 12px 18px; cursor: pointer; font-size: 13px; font-weight: 500; border-bottom: 3px solid transparent; white-space: nowrap; transition: color .15s, border-color .15s; user-select: none; }
-.topnav a:hover { color: #fff; }
-.topnav a.active { color: #fff; border-bottom-color: #fff; }
+/* ---------- cabeçalho ---------- */
+header.topbar { padding: 18px 28px 0; max-width: 1500px; margin: 0 auto; }
+.dash-header {
+  background: var(--card); border-radius: 8px; padding: 24px 28px;
+  margin-bottom: 16px; box-shadow: var(--shadow);
+  display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;
+}
+.dash-header h1 { font-size: 32px; font-weight: 700; margin: 0 0 6px; color: var(--primary); }
+.dash-header p { font-size: 16px; color: var(--ink-soft); margin: 0; font-weight: 400; }
+.badge { display: inline-block; background: var(--primary); border-radius: 4px; padding: 5px 14px; font-size: 13px; font-weight: 500; color: #fff; text-decoration: none; white-space: nowrap; margin-top: 6px; }
+.badge:hover { background: var(--primary-dark); }
 
-/* ── Layout ── */
-.layout { display: flex; flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; padding: 16px 16px 0; gap: 16px; }
+/* ---------- topnav ---------- */
+nav.topnav { display: flex; gap: 6px; flex-wrap: wrap; max-width: 1500px; margin: 0 auto 16px; padding: 0 28px; }
+nav.topnav a { color: var(--ink-soft); text-decoration: none; font-size: 13px; font-weight: 500; padding: 9px 16px; border-radius: 6px; cursor: pointer; background: var(--card); box-shadow: var(--shadow); }
+nav.topnav a.active { color: #fff; background: var(--primary); }
 
-/* ── Sidebar ── */
-.sidebar { width: 220px; min-width: 200px; background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.08); align-self: flex-start; position: sticky; top: 16px; font-size: 13px; }
-.sidebar h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #1565c0; margin-bottom: 14px; }
-.sidebar .group { margin-bottom: 14px; }
-.sidebar .group-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #888; margin-bottom: 6px; }
-.sidebar select { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: inherit; color: #232323; background: #fafafa; cursor: pointer; }
-.sidebar select:focus { outline: none; border-color: #1565c0; }
-.sidebar .divider { border-top: 1px solid #eee; margin: 14px 0; }
+/* ---------- layout ---------- */
+.layout { display: flex; align-items: flex-start; gap: 16px; padding: 0 28px 60px; max-width: 1500px; margin: 0 auto; }
 
-/* Segmented buttons (filtros Ano) */
-.seg { display: flex; gap: 2px; }
-.seg button { flex: 1; padding: 5px 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; cursor: pointer; font-family: inherit; transition: background .12s; }
-.seg button.on { background: #1565c0; color: #fff; border-color: #1565c0; }
-.seg button:hover:not(.on) { background: #e3e8f0; }
+/* ---------- sidebar ---------- */
+.sidebar {
+  width: 290px; flex: 0 0 290px; background: var(--card); border-radius: 8px;
+  padding: 20px; box-shadow: var(--shadow); position: sticky; top: 16px;
+  max-height: calc(100vh - 32px); overflow-y: auto;
+}
+.sidebar h3 { font-size: 13px; margin: 0 0 14px; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+.group { margin-bottom: 14px; }
+.group-label { font-size: 12px; font-weight: 500; letter-spacing: .05em; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 6px; }
+select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; color: var(--ink); background: #fff; font-family: inherit; }
+select:focus { outline: 2px solid #cfe0f7; border-color: var(--primary); }
+.divider { height: 1px; background: var(--line); margin: 14px 0; }
 
-/* ── Main ── */
-.main { flex: 1; min-width: 0; padding-bottom: 24px; }
+/* Segmented (filtro de ano) */
+.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; flex-wrap: wrap; }
+.seg button { border: none; background: #fff; font-size: 12px; padding: 6px 10px; color: var(--ink-soft); cursor: pointer; font-family: inherit; }
+.seg button.on { background: var(--primary); color: #fff; }
+.seg button + button { border-left: 1px solid var(--line); }
 
-/* ── KPIs ── */
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
-.kpi-card { background: #fff; border-radius: 8px; padding: 18px 20px; border-left: 4px solid var(--accent, #1565c0); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-.kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: #666; margin-bottom: 6px; }
-.kpi-value { font-size: 26px; font-weight: 700; color: #1565c0; line-height: 1.1; }
-.kpi-delta { font-size: 12px; margin-top: 6px; color: #666; }
+/* Aviso filtro */
+.note { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 16px; font-size: 13px; color: #856404; margin-bottom: 18px; }
+
+/* ---------- main ---------- */
+.main { flex: 1; min-width: 0; }
+
+/* ---------- KPI cards ---------- */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.kpi-card { background: var(--card); border-radius: 8px; padding: 18px 20px; border-left: 4px solid var(--accent, var(--primary)); box-shadow: var(--shadow); }
+.kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); margin-bottom: 6px; }
+.kpi-value { font-size: 26px; font-weight: 700; color: var(--primary); line-height: 1.1; }
+.kpi-delta { font-size: 12px; margin-top: 6px; color: var(--ink-soft); }
 .kpi-bar { height: 5px; background: #e5e7eb; border-radius: 4px; margin-top: 8px; }
-.kpi-bar-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+.kpi-bar-fill { height: 100%; border-radius: 4px; }
 
-/* ── Seções ── */
-.section-title { font-size: 20px; font-weight: 700; color: #232323; margin: 0 0 6px 0; }
-.section-sub { font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.6; }
-.ind-desc { font-size: 12px; color: #888; margin-top: 6px; line-height: 1.5; }
+/* ---------- Cards de conteúdo ---------- */
+.card { background: var(--card); border-radius: 8px; padding: 20px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.card-title { font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+.card-desc { font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; line-height: 1.5; }
 
-/* ── Cards de gráficos ── */
-.chart-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 16px; }
-.chart-title { font-size: 14px; font-weight: 600; color: #1565c0; margin-bottom: 4px; }
-.chart-desc { font-size: 12px; color: #888; margin-bottom: 14px; line-height: 1.5; }
+/* Título de seção dentro do main */
+.section-title { font-size: 22px; font-weight: 700; color: var(--ink); margin: 4px 0 16px; }
+.section-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 16px; line-height: 1.6; }
+.ind-desc { font-size: 12px; color: var(--ink-soft); margin-top: 8px; line-height: 1.5; }
 
-/* ── Grid de gráficos ── */
+/* ---------- Grids de gráficos ---------- */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 
-/* ── Aviso filtro ── */
-.aviso-filtro { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 16px; font-size: 12px; color: #856404; margin-bottom: 16px; }
+/* ---------- Gauge simples ---------- */
+.gauge-value { font-size: 32px; font-weight: 700; text-align: center; margin: 10px 0 4px; }
+.gauge-bar-wrap { height: 10px; background: #e5e7eb; border-radius: 6px; margin: 8px 0 4px; position: relative; }
+.gauge-bar-fill { height: 100%; border-radius: 6px; }
+.gauge-meta-tick { position: absolute; top: -4px; width: 2px; height: 18px; background: var(--red); }
 
-/* ── Gauge container ── */
-.gauge-wrap { display: flex; flex-direction: column; gap: 8px; }
-.gauge-card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-
-/* ── Metodologia ── */
-.metodologia-content { background: #fff; border-radius: 8px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,.08); line-height: 1.8; }
-.metodologia-content h3 { font-size: 16px; font-weight: 700; color: #1565c0; margin: 20px 0 8px; }
+/* ---------- Metodologia ---------- */
+.metodologia-content { background: var(--card); border-radius: 8px; padding: 28px; box-shadow: var(--shadow); line-height: 1.8; }
+.metodologia-content h3 { font-size: 16px; font-weight: 700; color: var(--primary); margin: 20px 0 8px; }
 .metodologia-content h3:first-child { margin-top: 0; }
 .metodologia-content p { font-size: 13px; color: #444; margin-bottom: 10px; }
-.metodologia-content strong { color: #232323; }
-.metodologia-content .ind-item { margin-bottom: 8px; font-size: 13px; }
-.metodologia-content .divider-line { border-top: 1px solid #eee; margin: 20px 0; }
-.metodologia-content .nota { background: #f0f4ff; border-left: 3px solid #1565c0; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 12px; color: #555; margin-top: 16px; }
+.metodologia-content .divider-line { border-top: 1px solid var(--line); margin: 20px 0; }
+.metodologia-content .nota { background: #f0f4ff; border-left: 3px solid var(--primary); padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 12px; color: #555; margin-top: 16px; }
 
-/* ── Rodapé ── */
-.rodape-simples { text-align: center; padding: 20px; color: #888; font-size: 12px; border-top: 1px solid #ddd; margin-top: 16px; background: #fff; }
+/* ---------- Rodapé ---------- */
+.rodape-simples { text-align: center; padding: 20px; color: var(--ink-soft); font-size: 12px; border-top: 1px solid var(--line); margin-top: 16px; }
 
-/* ── Mobile ── */
-@media (max-width: 900px) {
-  .layout { flex-direction: column; padding: 12px; }
-  .sidebar { width: 100%; position: static; }
+/* ---------- Mobile ---------- */
+@media (max-width: 960px) {
+  header.topbar, nav.topnav { padding-left: 12px; padding-right: 12px; }
+  .layout { flex-direction: column; padding: 0 12px 40px; }
+  .sidebar { width: 100%; flex: none; position: static; max-height: none; }
   .two-col, .three-col { grid-template-columns: 1fr; }
-  .dash-header { flex-direction: column; }
-  .dash-header h1 { font-size: 18px; }
+  .dash-header h1 { font-size: 22px; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
 }
