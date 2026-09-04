@@ -28,12 +28,8 @@ async function boot() {
   ]);
   DADOS = dados;
 
-  // Adicionar id às features do GeoJSON para Plotly
   if (mapa) {
-    for (const feat of mapa.features) {
-      feat.id = feat.properties.abbrev_state;
-    }
-    MAPA_JSON = mapa;
+    MAPA_JSON = mapa; // id já embutido no arquivo
   }
 
   wireTopnav();
