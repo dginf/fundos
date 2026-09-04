@@ -651,29 +651,30 @@ function renderGeografica(main, df) {
     ${avisoFiltro()}
     <div class="section-title">Análise Geográfica</div>
     <div class="two-col" style="align-items:start">
-      <div class="card" id="wrap-mapa" style="min-height:420px">
+      <div class="card">
         <div class="card-title">Mapa de Aderência à PNDR por UF</div>
-        <div id="mapa-pndr" style="height:380px"></div>
+        <div id="mapa-pndr" style="height:380px;width:100%"></div>
       </div>
       <div class="card">
         <div class="card-title">Ranking de Aderência à PNDR por UF</div>
-        <div class="ind-desc">Percentual de contratações em tipologias prioritárias da PNDR por UF.</div>
+        <div class="card-desc">Percentual de contratações em tipologias prioritárias da PNDR por UF.</div>
         <div style="height:380px"><canvas id="c-rank-pndr"></canvas></div>
       </div>
     </div>
     <div class="section-title" style="font-size:17px;margin-top:8px">Ind. 14 — Contratações por UF (% sobre total do Fundo)</div>
     <div class="section-sub">Razão entre o total contratado na UF e o total contratado pelo Fundo no exercício.</div>
-    <div class="three-col" id="mapas-fundos">
-      <div class="card"><div class="card-title">FCO — % por UF</div><div id="mapa-fco" style="height:300px"></div></div>
-      <div class="card"><div class="card-title">FNE — % por UF</div><div id="mapa-fne" style="height:300px"></div></div>
-      <div class="card"><div class="card-title">FNO — % por UF</div><div id="mapa-fno" style="height:300px"></div></div>
+    <div class="three-col">
+      <div class="card"><div class="card-title">FCO — % por UF</div><div id="mapa-fco" style="height:280px;width:100%"></div></div>
+      <div class="card"><div class="card-title">FNE — % por UF</div><div id="mapa-fne" style="height:280px;width:100%"></div></div>
+      <div class="card"><div class="card-title">FNO — % por UF</div><div id="mapa-fno" style="height:280px;width:100%"></div></div>
     </div>
     <div class="card">
       <div class="card-title">Ind. 14 — Contratações por UF (% sobre total do Fundo)</div>
-      <div style="height:${ufData.length * 22 + 80}px"><canvas id="c-ind14"></canvas></div>
+      <div id="wrap-ind14"><canvas id="c-ind14"></canvas></div>
     </div>`;
 
   // Ranking barras horizontais
+  const ufsInd14Tmp = [...new Set(fundoUFData.map(d => d.UF))].sort();
   const ufRank = [...ufData].sort((a,b) => a.pct_pndr - b.pct_pndr);
   destroyChart('c-rank-pndr');
   const ctx14 = document.getElementById('c-rank-pndr').getContext('2d');
@@ -693,6 +694,9 @@ function renderGeografica(main, df) {
 
   // Ind. 14 agrupado
   const ufsInd14 = [...new Set(fundoUFData.map(d => d.UF))].sort();
+  const wrapInd14 = document.getElementById('wrap-ind14');
+  const altInd14 = Math.max(ufsInd14.length * 30 + 80, 400);
+  wrapInd14.style.height = altInd14 + 'px';
   destroyChart('c-ind14');
   const ctx = document.getElementById('c-ind14').getContext('2d');
   charts['c-ind14'] = new Chart(ctx, {
@@ -709,8 +713,121 @@ function renderGeografica(main, df) {
     },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { x: { grid: { color: '#f0f0f0' }, ticks: { callback: v => v + '%' } }, y: { grid: { display: false } } },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } },
+        tooltip: { mode: 'index', intersect: false, callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(1)}%` } },
+      },
+      scales: {
+        x: { grid: { color: '#f0f0f0' }, ticks: { callback: v => v + '%' }, title: { display: true, text: '% do total do fundo' } },
+        y: { grid: { display: false } },
+      },
+    },
+  });
+
+  // Mapas Plotly
+  if (MAPA_JSON && window.Plotly) {
+
+    // Configuração geo comum para Plotly.js no browser
+    const geoBase = {
+      showframe: false, showcoastlines: false, showland: false,
+      showocean: false, showlakes: false, showrivers: false,
+      projection: { type: 'mercator' },
+      center: { lat: -14, lon: -52 },
+      lonaxis: { range: [-74, -32] },
+      lataxis: { range: [-34,  6] },
+    };
+
+    const layoutBase = {
+      margin: { r: 0, t: 30, l: 0, b: 0 },
+      paper_bgcolor: 'white',
+      geo: geoBase,
+    };
+
+    function makeChoropleth(ufs, zvals, zmin, zmax, colorbar_title, hoverTpl) {
+      return [{
+        type: 'choropleth',
+        geojson: MAPA_JSON,
+        featureidkey: 'properties.abbrev_state',
+        locations: ufs,
+        z: zvals,
+        colorscale: 'Blues',
+        zmin, zmax,
+        colorbar: { title: colorbar_title, ticksuffix: '%', thickness: 14, len: 0.8 },
+        marker: { line: { color: 'white', width: 0.8 } },
+        hovertemplate: hoverTpl,
+      }];
+    }
+
+    // Mapa principal — aderência PNDR
+    Plotly.newPlot('mapa-pndr',
+      makeChoropleth(
+        ufData.map(u => u.UF),
+        ufData.map(u => +u.pct_pndr.toFixed(1)),
+        0, 100, '% PNDR',
+        '<b>%{location}</b><br>% PNDR: %{z:.1f}%<extra></extra>'
+      ),
+      { ...layoutBase, height: 380 },
+      { responsive: true, displayModeBar: false }
+    );
+
+    // Mapas por fundo
+    const zoomFundo = {
+      FCO: { center: { lat: -15.5, lon: -54   }, lonaxis: { range: [-62, -44] }, lataxis: { range: [-25,  -6] } },
+      FNE: { center: { lat: -11.0, lon: -40   }, lonaxis: { range: [-49, -32] }, lataxis: { range: [-19,   2] } },
+      FNO: { center: { lat:  -5.0, lon: -62   }, lonaxis: { range: [-74, -46] }, lataxis: { range: [-14,   5] } },
+    };
+
+    ['FCO','FNE','FNO'].forEach(f => {
+      const fData = fundoUFData.filter(d => d.FUNDO_ORIGEM === f);
+      if (!fData.length) return;
+      const geo = { ...geoBase, ...zoomFundo[f] };
+      Plotly.newPlot(`mapa-${f.toLowerCase()}`,
+        makeChoropleth(
+          fData.map(d => d.UF),
+          fData.map(d => +d.pct_uf.toFixed(2)),
+          0, 50, '% Fundo',
+          '<b>%{location}</b><br>%{z:.1f}%<extra></extra>'
+        ),
+        { margin: { r: 0, t: 0, l: 0, b: 0 }, paper_bgcolor: 'white', geo, height: 280 },
+        { responsive: true, displayModeBar: false }
+      );
+    });
+
+  } else {
+    ['mapa-pndr','mapa-fco','mapa-fne','mapa-fno'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<div style="text-align:center;padding:40px;color:#888;font-size:13px">Mapa indisponível.</div>';
+    });
+  }
+  // Ind. 14 agrupado
+  const ufsInd14 = [...new Set(fundoUFData.map(d => d.UF))].sort();
+  const wrapInd14 = document.getElementById('wrap-ind14');
+  const altInd14 = Math.max(ufsInd14.length * 30 + 80, 400);
+  wrapInd14.style.height = altInd14 + 'px';
+  destroyChart('c-ind14');
+  const ctx = document.getElementById('c-ind14').getContext('2d');
+  charts['c-ind14'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ufsInd14,
+      datasets: FUNDOS.map(f => ({
+        label: f, backgroundColor: CORES[f],
+        data: ufsInd14.map(u => {
+          const r = fundoUFData.find(d => d.FUNDO_ORIGEM === f && d.UF === u);
+          return r ? +r.pct_uf.toFixed(2) : 0;
+        }),
+      })),
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } },
+        tooltip: { mode: 'index', intersect: false, callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(1)}%` } },
+      },
+      scales: {
+        x: { grid: { color: '#f0f0f0' }, ticks: { callback: v => v + '%' }, title: { display: true, text: '% do total do fundo' } },
+        y: { grid: { display: false } },
+      },
     },
   });
 
