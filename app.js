@@ -722,58 +722,103 @@ function renderGeografica(main, df) {
   // Mapas Plotly
   if (MAPA_JSON && window.Plotly) {
 
-    // Mapas usando choroplethmapbox com style white-bg (sem token, sem tiles externos)
-    function makeMapbox(ufs, zvals, zmin, zmax, colorbarTitle, zoom, centerLat, centerLon) {
-      return {
-        data: [{
-          type: 'choroplethmapbox',
-          geojson: MAPA_JSON,
-          locations: ufs,
-          z: zvals,
-          colorscale: 'Blues',
-          zmin, zmax,
-          colorbar: { title: colorbarTitle, ticksuffix: '%', thickness: 14, len: 0.8 },
-          marker: { line: { color: 'white', width: 0.8 }, opacity: 0.85 },
-          hovertemplate: '<b>%{location}</b><br>%{z:.1f}%<extra></extra>',
-        }],
-        layout: {
-          mapbox: { style: 'white-bg', zoom, center: { lat: centerLat, lon: centerLon } },
-          margin: { r: 0, t: 0, l: 0, b: 0 },
-          paper_bgcolor: 'white',
-        },
-        config: { responsive: true, displayModeBar: false },
-      };
+    // Mapas com Leaflet — GeoJSON colorido manualmente
+    function blueScale(val, min, max) {
+      const t = Math.max(0, Math.min(1, (val - min) / (max - min)));
+      // Escala de azul: branco → azul escuro
+      const r = Math.round(255 - t * 200);
+      const g = Math.round(255 - t * 160);
+      const b = Math.round(255 - t * 50);
+      return `rgb(${r},${g},${b})`;
     }
 
-    // Mapa principal — Brasil inteiro
-    const mpndr = makeMapbox(
-      ufData.map(u => u.UF),
-      ufData.map(u => +u.pct_pndr.toFixed(1)),
-      0, 100, '% PNDR', 2.5, -14, -52
-    );
-    Plotly.newPlot('mapa-pndr', mpndr.data, { ...mpndr.layout, height: 380 }, mpndr.config);
+    let leafletMaps = {};
+    function destroyLeaflet(id) {
+      if (leafletMaps[id]) { leafletMaps[id].remove(); delete leafletMaps[id]; }
+    }
+
+    function makeLegend(map, min, max, suffix) {
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = () => {
+        const div = L.DomUtil.create('div');
+        div.style.cssText = 'background:white;padding:8px 10px;border-radius:4px;font-size:11px;font-family:Roboto,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.2);line-height:1.6';
+        const steps = [0, 0.25, 0.5, 0.75, 1];
+        div.innerHTML = steps.reverse().map(t => {
+          const v = min + t * (max - min);
+          return `<div style="display:flex;align-items:center;gap:6px">
+            <span style="display:inline-block;width:16px;height:10px;background:${blueScale(v, min, max)};border:1px solid #ccc"></span>
+            <span>${v.toFixed(0)}${suffix}</span>
+          </div>`;
+        }).join('');
+        return div;
+      };
+      legend.addTo(map);
+    }
+
+    function makeLeafletMap(containerId, dataByUF, zmin, zmax, suffix, bounds) {
+      destroyLeaflet(containerId);
+      const el = document.getElementById(containerId);
+      if (!el) return;
+
+      const map = L.map(containerId, {
+        zoomControl: true, scrollWheelZoom: false,
+        attributionControl: false, dragging: true,
+      });
+      leafletMaps[containerId] = map;
+
+      L.geoJSON(MAPA_JSON, {
+        style: feat => {
+          const uf = feat.properties.abbrev_state;
+          const val = dataByUF[uf];
+          return {
+            fillColor: val != null ? blueScale(val, zmin, zmax) : '#e5e7eb',
+            fillOpacity: 0.85,
+            color: 'white',
+            weight: 0.8,
+          };
+        },
+        onEachFeature: (feat, layer) => {
+          const uf = feat.properties.abbrev_state;
+          const val = dataByUF[uf];
+          layer.bindTooltip(
+            val != null
+              ? `<b>${uf}</b><br>${val.toFixed(1)}${suffix}`
+              : `<b>${uf}</b><br>Sem dados`,
+            { sticky: true, className: 'leaflet-tooltip-custom' }
+          );
+        },
+      }).addTo(map);
+
+      if (bounds) {
+        map.fitBounds(bounds);
+      } else {
+        map.fitBounds([[-34, -74], [6, -32]]);
+      }
+
+      makeLegend(map, zmin, zmax, suffix);
+    }
+
+    // Mapa principal — aderência PNDR
+    const pndrByUF = {};
+    ufData.forEach(u => { pndrByUF[u.UF] = +u.pct_pndr.toFixed(1); });
+    makeLeafletMap('mapa-pndr', pndrByUF, 0, 100, '%', null);
 
     // Mapas por fundo
-    const cfgFundo = {
-      FCO: { zoom: 3.5, lat: -15.5, lon: -54.5 },
-      FNE: { zoom: 2.8, lat: -11.0, lon: -40.0 },
-      FNO: { zoom: 3.2, lat:  -5.0, lon: -62.0 },
+    const boundsF = {
+      FCO: [[-25, -62], [-6, -44]],
+      FNE: [[-19, -49], [ 2, -32]],
+      FNO: [[-14, -74], [ 5, -46]],
     };
     ['FCO','FNE','FNO'].forEach(f => {
-      const fData = fundoUFData.filter(d => d.FUNDO_ORIGEM === f);
-      if (!fData.length) return;
-      const { zoom, lat, lon } = cfgFundo[f];
-      const mf = makeMapbox(
-        fData.map(d => d.UF),
-        fData.map(d => +d.pct_uf.toFixed(2)),
-        0, 50, '% Fundo', zoom, lat, lon
-      );
-      Plotly.newPlot(`mapa-${f.toLowerCase()}`, mf.data, { ...mf.layout, height: 280 }, mf.config);
+      const byUF = {};
+      fundoUFData.filter(d => d.FUNDO_ORIGEM === f)
+        .forEach(d => { byUF[d.UF] = +d.pct_uf.toFixed(2); });
+      makeLeafletMap(`mapa-${f.toLowerCase()}`, byUF, 0, 50, '%', boundsF[f]);
     });
   } else {
     ['mapa-pndr','mapa-fco','mapa-fne','mapa-fno'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.innerHTML = '<div style="text-align:center;padding:40px;color:#888;font-size:13px">Mapa indisponível.</div>';
+      if (el) el.innerHTML = '<div style="text-align:center;padding:40px;color:#888;font-size:13px">Mapa indisponível — GeoJSON não carregado.</div>';
     });
   }
   // Ind. 14 agrupado
