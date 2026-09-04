@@ -728,12 +728,15 @@ function renderGeografica(main, df) {
 
     // Configuração geo comum para Plotly.js no browser
     const geoBase = {
-      showframe: false, showcoastlines: false, showland: false,
-      showocean: false, showlakes: false, showrivers: false,
+      showframe: false,
+      showcoastlines: false,
+      showland: false,
+      showocean: false,
+      showlakes: false,
+      showrivers: false,
       projection: { type: 'mercator' },
-      center: { lat: -14, lon: -52 },
-      lonaxis: { range: [-74, -32] },
-      lataxis: { range: [-34,  6] },
+      fitbounds: 'locations',
+      visible: false,
     };
 
     const layoutBase = {
@@ -746,7 +749,6 @@ function renderGeografica(main, df) {
       return [{
         type: 'choropleth',
         geojson: MAPA_JSON,
-        featureidkey: 'properties.abbrev_state',
         locations: ufs,
         z: zvals,
         colorscale: 'Blues',
@@ -771,9 +773,9 @@ function renderGeografica(main, df) {
 
     // Mapas por fundo
     const zoomFundo = {
-      FCO: { center: { lat: -15.5, lon: -54   }, lonaxis: { range: [-62, -44] }, lataxis: { range: [-25,  -6] } },
-      FNE: { center: { lat: -11.0, lon: -40   }, lonaxis: { range: [-49, -32] }, lataxis: { range: [-19,   2] } },
-      FNO: { center: { lat:  -5.0, lon: -62   }, lonaxis: { range: [-74, -46] }, lataxis: { range: [-14,   5] } },
+      FCO: {},
+      FNE: {},
+      FNO: {},
     };
 
     ['FCO','FNE','FNO'].forEach(f => {
