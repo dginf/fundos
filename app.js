@@ -674,7 +674,6 @@ function renderGeografica(main, df) {
     </div>`;
 
   // Ranking barras horizontais
-  const ufsInd14Tmp = [...new Set(fundoUFData.map(d => d.UF))].sort();
   const ufRank = [...ufData].sort((a,b) => a.pct_pndr - b.pct_pndr);
   destroyChart('c-rank-pndr');
   const ctx14 = document.getElementById('c-rank-pndr').getContext('2d');
@@ -800,36 +799,7 @@ function renderGeografica(main, df) {
     });
   }
   // Ind. 14 agrupado
-  const ufsInd14 = [...new Set(fundoUFData.map(d => d.UF))].sort();
-  const wrapInd14 = document.getElementById('wrap-ind14');
-  const altInd14 = Math.max(ufsInd14.length * 30 + 80, 400);
-  wrapInd14.style.height = altInd14 + 'px';
-  destroyChart('c-ind14');
-  const ctx = document.getElementById('c-ind14').getContext('2d');
-  charts['c-ind14'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ufsInd14,
-      datasets: FUNDOS.map(f => ({
-        label: f, backgroundColor: CORES[f],
-        data: ufsInd14.map(u => {
-          const r = fundoUFData.find(d => d.FUNDO_ORIGEM === f && d.UF === u);
-          return r ? +r.pct_uf.toFixed(2) : 0;
-        }),
-      })),
-    },
-    options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16 } },
-        tooltip: { mode: 'index', intersect: false, callbacks: { label: c => `${c.dataset.label}: ${c.raw.toFixed(1)}%` } },
-      },
-      scales: {
-        x: { grid: { color: '#f0f0f0' }, ticks: { callback: v => v + '%' }, title: { display: true, text: '% do total do fundo' } },
-        y: { grid: { display: false } },
-      },
-    },
-  });
+
 
   // Mapas Plotly
   if (MAPA_JSON && window.Plotly) {
