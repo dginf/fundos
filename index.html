@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundos Constitucionais — Painel PNDR</title>
+<meta property="og:title" content="Painel dos Fundos Constitucionais de Financiamento">
+<meta property="og:description" content="Monitoramento dos indicadores FCO · FNE · FNO — Portaria MIDR n. 3.646/2024">
+<meta property="og:site_name" content="MIDR / SNIDR">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="dash-header">
+    <div>
+      <h1>Painel dos Fundos Constitucionais de Financiamento</h1>
+      <p>Monitoramento dos indicadores de contratação: FCO · FNE · FNO — Política Nacional de Desenvolvimento Regional (PNDR) | Fonte: MIDR/SNIDR</p>
+    </div>
+    <a href="https://www.in.gov.br/web/dou/-/portaria-midr-n-3.646-de-29-de-outubro-de-2024-593201878" target="_blank" class="badge">Portaria MIDR n. 3.646/2024 ↗</a>
+  </div>
+</header>
+
+<nav class="topnav" id="topnav">
+  <a data-view="visao-geral" class="active">Visão Geral</a>
+  <a data-view="aderencia">Aderência à PNDR</a>
+  <a data-view="democratizacao">Democratização do Crédito</a>
+  <a data-view="territorios">Territórios Específicos</a>
+  <a data-view="setorial">Composição Setorial</a>
+  <a data-view="geografica">Análise Geográfica</a>
+  <a data-view="metodologia">Metodologia</a>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="rodape-simples">
+  Painel PNDR — Fundos Constitucionais | Ministério da Integração e do Desenvolvimento Regional | SNIDR | Portaria MIDR n. 3.646/2024 — Anexo III
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
